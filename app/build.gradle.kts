@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-
+    implementation("com.yandex.android:maps.mobile:4.14.0-lite")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
