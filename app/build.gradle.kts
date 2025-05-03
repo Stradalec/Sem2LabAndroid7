@@ -1,3 +1,5 @@
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -9,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.sem2labandroid7"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -37,7 +39,8 @@ android {
 
 dependencies {
     implementation("com.yandex.android:maps.mobile:4.14.0-lite")
-    implementation(libs.androidx.core.ktx)
+    implementation ("androidx.core:core-ktx:1.12.0")
+    implementation ("androidx.core:core:1.12.0")
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
