@@ -12,18 +12,21 @@ import com.yandex.mapkit.mapview.MapView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
+    private val selectedPoints = mutableListOf<Point>()
+    private val mapObjects by lazy { mapView.map.mapObjects }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeMapKit()
         setContentView(R.layout.activity_main)
         mapView = findViewById(R.id.mapview)
-        mapView.getMap().move(
+        mapView.map.move(
             CameraPosition(
                 Point(55.354993, 86.085805), 15.0f, 0.0f, 0.0f
             )
         )
 
     }
+
     private fun initializeMapKit() {
         try {
             MapKitFactory.setApiKey(getString(R.string.mapkit_api_key))
