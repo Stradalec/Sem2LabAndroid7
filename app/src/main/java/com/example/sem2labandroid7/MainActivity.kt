@@ -12,8 +12,6 @@ import com.yandex.mapkit.mapview.MapView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
-    private val selectedPoints = mutableListOf<Point>()
-    private val mapObjects by lazy { mapView.map.mapObjects }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeMapKit()
