@@ -62,9 +62,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
         findViewById<Button>(R.id.btn_zoom_to_user).setOnClickListener {
             viewModel.requestLocationUpdates()
         }
+        findViewById<Button>(R.id.btn_clear).setOnClickListener {
+            clearMarkersAndRoute()
+        }
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+    private fun clearMarkersAndRoute() {
+        startMarker?.remove()
+        endMarker?.remove()
+        routePolyline?.remove()
+
+        startMarker = null
+        endMarker = null
+        routePolyline = null
     }
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
