@@ -16,5 +16,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:text="К месту"
+        android:id="@+id/btn_zoom_to_location"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_zoom_to_user"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <Button
+        android:text="Центровка на пользователе"
+        android:id="@+id/btn_zoom_to_user"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

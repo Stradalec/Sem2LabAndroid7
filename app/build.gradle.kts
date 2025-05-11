@@ -57,6 +57,7 @@ secrets {
 }
 dependencies {
     implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("androidx.core:core-ktx:1.12.0")
     implementation ("androidx.core:core:1.12.0")
     implementation(libs.androidx.appcompat)
