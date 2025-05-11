@@ -2,6 +2,7 @@ package com.example.sem2labandroid7
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -16,13 +17,33 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.maps.DirectionsApi
+import com.google.maps.GeoApiContext
+import com.google.maps.model.TravelMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickListener {
     private lateinit var map: GoogleMap
+    private var startMarker: Marker? = null
+    private var endMarker: Marker? = null
+    private var routePolyline: Polyline? = null
+    private lateinit var geoApiContext: GeoApiContext
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val viewModel: MapViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
+        geoApiContext = GeoApiContext.Builder()
+            .apiKey("MAPS_API_KEY")
+            .build()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -47,6 +68,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        map.setOnMapLongClickListener(this)
     }
     private fun zoomTo(position: LatLng) {
         map.moveCamera(
@@ -105,6 +127,67 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
+    }
+
+    override fun onMapLongClick(latLng: LatLng) {
+        if (startMarker == null) {
+            startMarker = map.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title("Старт")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+            )
+        } else {
+            endMarker?.remove()
+            endMarker = map.addMarker(
+                MarkerOptions()
+                    .position(latLng)
+                    .title("Финиш")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            )
+            startMarker?.position?.let { start ->
+                endMarker?.position?.let { end ->
+                    drawRoute(start, end)
+                }
+            }
+        }
+    }
+    private fun drawRoute(start: LatLng, end: LatLng) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val directionsResult = DirectionsApi.newRequest(geoApiContext)
+                    .mode(TravelMode.WALKING)
+                    .origin(com.google.maps.model.LatLng(start.latitude, start.longitude))
+                    .destination(com.google.maps.model.LatLng(end.latitude, end.longitude))
+                    .await()
+
+                if (directionsResult.routes.isNotEmpty()) {
+                    val points = directionsResult.routes[0]
+                        .overviewPolyline
+                        .decodePath()
+                        .map { LatLng(it.lat, it.lng) }
+
+                    withContext(Dispatchers.Main) {
+                        routePolyline?.remove()
+                        routePolyline = map.addPolyline(
+                            PolylineOptions()
+                                .addAll(points)
+                                .color(Color.BLUE)
+                                .width(12f)
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        geoApiContext.shutdown()
     }
 
 }

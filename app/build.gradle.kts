@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.7.2")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.google.maps:google-maps-services:2.2.0")
     implementation ("androidx.core:core-ktx:1.12.0")
     implementation ("androidx.core:core:1.12.0")
     implementation(libs.androidx.appcompat)
