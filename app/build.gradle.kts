@@ -56,6 +56,9 @@ secrets {
     defaultPropertiesFileName = "local.defaults.properties"
 }
 dependencies {
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation("androidx.activity:activity-ktx:1.7.2")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("androidx.core:core-ktx:1.12.0")
