@@ -9,7 +9,7 @@ import com.google.maps.GeoApiContext
 import com.google.maps.model.TravelMode
 import kotlinx.coroutines.launch
 
-class MapViewModel: ViewModel() {
+class MapViewModel : ViewModel() {
     private lateinit var repository: MapsRepository
 
 
@@ -36,9 +36,11 @@ class MapViewModel: ViewModel() {
     fun requestLocationUpdates() {
         _requestLocationPermission.value = true
     }
+
     fun initRepository(geoApiContext: GeoApiContext) {
         repository = MapsRepository(geoApiContext)
     }
+
     fun calculateRoute(start: LatLng, end: LatLng) {
         viewModelScope.launch {
             try {

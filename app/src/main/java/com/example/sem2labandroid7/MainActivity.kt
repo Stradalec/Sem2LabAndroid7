@@ -4,32 +4,25 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.maps.DirectionsApi
 import com.google.maps.GeoApiContext
-import com.google.maps.model.TravelMode
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickListener {
@@ -83,6 +76,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
             }
         }
     }
+
     private fun clearMarkersAndRoute() {
         startMarker?.remove()
         endMarker?.remove()
@@ -92,10 +86,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
         endMarker = null
         routePolyline = null
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setOnMapLongClickListener(this)
     }
+
     private fun zoomTo(position: LatLng) {
         map.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
@@ -123,6 +119,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
             fetchLocation()
         }
     }
+
     private fun fetchLocation() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -138,6 +135,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
                 }
         }
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -166,6 +164,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
             viewModel.calculateRoute(currentStart, latLng)
         }
     }
+
     private fun updateMarkers(start: LatLng?, end: LatLng?) {
         startMarker?.remove()
         endMarker?.remove()

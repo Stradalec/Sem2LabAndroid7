@@ -7,18 +7,13 @@ import com.google.maps.model.TravelMode
 
 class MapsRepository(private val geoApiContext: GeoApiContext) {
     suspend fun getRoute(
-        start: LatLng,
-        end: LatLng,
-        mode: TravelMode
+        start: LatLng, end: LatLng, mode: TravelMode
     ): List<LatLng> {
-        val result = DirectionsApi.newRequest(geoApiContext)
-            .mode(mode)
+        val result = DirectionsApi.newRequest(geoApiContext).mode(mode)
             .origin(com.google.maps.model.LatLng(start.latitude, start.longitude))
-            .destination(com.google.maps.model.LatLng(end.latitude, end.longitude))
-            .await()
+            .destination(com.google.maps.model.LatLng(end.latitude, end.longitude)).await()
 
-        return result.routes.first().overviewPolyline.decodePath()
-            .map { LatLng(it.lat, it.lng) }
+        return result.routes.first().overviewPolyline.decodePath().map { LatLng(it.lat, it.lng) }
     }
 }
 
