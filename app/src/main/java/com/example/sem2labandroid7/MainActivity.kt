@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
     private val viewModel: MapViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         geoApiContext = GeoApiContext.Builder()
-            .apiKey("MAPS_API_KEY")
+            .apiKey("My Api key was here, but it was just for me")
             .build()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
