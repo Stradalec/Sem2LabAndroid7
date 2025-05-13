@@ -68,6 +68,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        viewModel.initRepository(geoApiContext)
+        viewModel.routePoints.observe(this) { points ->
+            drawRoute(points)
+        }
+
+        viewModel.markers.observe(this) { (start, end) ->
+            updateMarkers(start, end)
+        }
+
+        viewModel.routeError.observe(this) { message ->
+            message?.let {
+                Toast.makeText(this, "Ошибка: $it", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     private fun clearMarkersAndRoute() {
         startMarker?.remove()
@@ -142,59 +156,47 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, OnMapLongClickList
     }
 
     override fun onMapLongClick(latLng: LatLng) {
-        if (startMarker == null) {
+        val currentStart = startMarker?.position
+        val currentEnd = endMarker?.position
+
+        if (currentStart == null) {
+            viewModel.updateMarkers(latLng, currentEnd)
+        } else {
+            viewModel.updateMarkers(currentStart, latLng)
+            viewModel.calculateRoute(currentStart, latLng)
+        }
+    }
+    private fun updateMarkers(start: LatLng?, end: LatLng?) {
+        startMarker?.remove()
+        endMarker?.remove()
+
+        start?.let {
             startMarker = map.addMarker(
                 MarkerOptions()
-                    .position(latLng)
+                    .position(it)
                     .title("Старт")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
             )
-        } else {
-            endMarker?.remove()
+        }
+
+        end?.let {
             endMarker = map.addMarker(
                 MarkerOptions()
-                    .position(latLng)
+                    .position(it)
                     .title("Финиш")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             )
-            startMarker?.position?.let { start ->
-                endMarker?.position?.let { end ->
-                    drawRoute(start, end)
-                }
-            }
         }
     }
-    private fun drawRoute(start: LatLng, end: LatLng) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val directionsResult = DirectionsApi.newRequest(geoApiContext)
-                    .mode(TravelMode.WALKING)
-                    .origin(com.google.maps.model.LatLng(start.latitude, start.longitude))
-                    .destination(com.google.maps.model.LatLng(end.latitude, end.longitude))
-                    .await()
 
-                if (directionsResult.routes.isNotEmpty()) {
-                    val points = directionsResult.routes[0]
-                        .overviewPolyline
-                        .decodePath()
-                        .map { LatLng(it.lat, it.lng) }
-
-                    withContext(Dispatchers.Main) {
-                        routePolyline?.remove()
-                        routePolyline = map.addPolyline(
-                            PolylineOptions()
-                                .addAll(points)
-                                .color(Color.BLUE)
-                                .width(12f)
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+    private fun drawRoute(points: List<LatLng>) {
+        routePolyline?.remove()
+        routePolyline = map.addPolyline(
+            PolylineOptions()
+                .addAll(points)
+                .color(Color.BLUE)
+                .width(12f)
+        )
     }
 
     override fun onDestroy() {
